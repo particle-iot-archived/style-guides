@@ -1,23 +1,20 @@
 # Node.js Style Guide
 
-This is a guide for writing consistent and aesthetically pleasing node.js code.
+This is a guide for writing consistent and aesthetically pleasing node.js code at Spark.
 It is inspired by what is popular within the community, and flavored with some
 personal opinions.
 
-There is a .jshintrc which enforces these rules as closely as possible. You can
-either use that and adjust it, or use
-[this script](https://gist.github.com/kentcdodds/11293570) to make your own.
+There is a `.eshintrc` which enforces these rules as closely as possible.
 
-This guide was created by [Felix Geisendörfer](http://felixge.de/) and is
+This is based on guide created by [Felix Geisendörfer](http://felixge.de/) and is
 licensed under the [CC BY-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/)
-license. You are encouraged to fork this repository and make adjustments
-according to your preferences.
+license.
 
 ![Creative Commons License](http://i.creativecommons.org/l/by-sa/3.0/88x31.png)
 
 ## Table of contents
 
-* [2 Spaces for indention](#2-spaces-for-indention)
+* [Tab for indention](#tab-for-indention)
 * [Newlines](#newlines)
 * [No trailing whitespace](#no-trailing-whitespace)
 * [Use Semicolons](#use-semicolons)
@@ -29,17 +26,50 @@ according to your preferences.
 * [Use lowerCamelCase for variables, properties and function names](#use-lowercamelcase-for-variables-properties-and-function-names)
 * [Use UpperCamelCase for class names](#use-uppercamelcase-for-class-names)
 * [Use UPPERCASE for Constants](#use-uppercase-for-constants)
+* [Use _underscore for private functions/vars](#use-underscore-for-private-functionsvars)
+* [Naming files](#naming-files)
+* [Modularize](#modularize)
 * [Object / Array creation](#object--array-creation)
 * [Use the === operator](#use-the--operator)
-* [Use multi-line ternary operator](#use-multi-line-ternary-operator)
+* [Use one-line ternary operator](#use-one-line-ternary-operator)
+* [Do not extend built-in prototypes](#do-not-extend-built-in-prototypes)
+* [Use descriptive conditions](#use-descriptive-conditions)
+* [Keep operators on the beginning of the line](#keep-operators-on-the-beginning-of-the-line)
+* [Write small functions](#write-small-functions)
+* [Return early from functions](#return-early-from-functions)
+* [Name your closures](#name-your-closures)
+* [No nested closures](#no-nested-closures)
 * [Use slashes for comments](#use-slashes-for-comments)
+* [Don't execute code inline](#dont-execute-code-inline)
 * [Object.freeze, Object.preventExtensions, Object.seal, with, eval](#objectfreeze-objectpreventextensions-objectseal-with-eval)
+* [IIFE](#iife)
+* [Use strict mode](#use-strict-mode)
 * [Getters and setters](#getters-and-setters)
 
-## 2 Spaces for indention
+## Tab for indention
 
-Use 2 spaces for indenting your code and swear an oath to never mix tabs and
+Use tab character for indenting your code and swear an oath to never mix tabs and
 spaces - a special kind of hell is awaiting you otherwise.
+
+### GitHub Atom setup
+
+Atom detects automatically if file uses tabs or spaces. Still to prevent any issues, disable **Soft Tabs** in **Editor Settings**:
+
+![Atom settings](resources/atom.png)
+
+You can also enable **Show Invisibles** to see what whitespace is used (dots for spaces and arrows for tabs).
+
+### IntelliJ IDEA family (WebStorm, PyCharm, RubyMine etc.)
+
+*TBD*
+
+### Vim
+
+*TBD*
+
+### Emacs
+
+*TBD*
 
 ## Newlines
 
@@ -66,7 +96,7 @@ cheap syntactic pleasures.
 
 Limit your lines to 80 characters. Yes, screens have gotten much bigger over the
 last few years, but your brain has not. Use the additional room for split screen,
-your editor supports that, right?
+your editor supports that, right? This will be marked as warning while linting.
 
 ## Use single quotes
 
@@ -82,6 +112,14 @@ var foo = 'bar';
 
 ```js
 var foo = "bar";
+```
+
+Only exception are strings containing single quotes:
+
+*[Acceptable](http://media.tumblr.com/47b7271983a0a618935e04c5bd8d1c66/tumblr_inline_mvv37q8FMd1ro2x8m.jpg):*
+
+```js
+var foo = "bar is 'baz'";
 ```
 
 ## Opening braces go on the same line
@@ -122,7 +160,7 @@ User
   .exec(function(err, user) {
     return true;
   });
-````
+```
 
 *Wrong:*
 
@@ -149,7 +187,7 @@ User.findOne({ name: 'foo' }).populate('bar')
   .exec(function(err, user) {
     return true;
   });
-````
+```
 
 ## Declare one variable per var statement
 
@@ -254,6 +292,29 @@ File.fullPermissions = 0777;
 
 [const]: https://developer.mozilla.org/en/JavaScript/Reference/Statements/const
 
+## Use _underscore for private functions/vars
+
+When function/variable is supposed to be internal an can be changed/removed without notice, prefix it with `_`:
+
+```js
+var foo = {
+  _internal: 1,
+  external: 2
+};
+```
+
+## Naming files
+
+Filename of module exporting a class should match the class's name (i.e. `module.exports = UserCreator` should be in `UserCreator.js` file).
+
+Test specs should be suffixed with `.spec.js` (i.e. `UserCreator.spec.js`).
+
+Always group modules in directories based on their function (i.e. models, controllers and views in separate dirs).
+
+# Modularize
+
+Keep your files under 1000 lines. If it gets longer, try to refactor it into smaller modules.
+
 ## Object / Array creation
 
 Use trailing commas and put *short* declarations on a single line. Only quote
@@ -304,24 +365,26 @@ if (a == '') {
 }
 ```
 
+There are places where you may want to use `==` intentionally but it will be still marked as warning so you could double check.
+
 [comparisonoperators]: https://developer.mozilla.org/en/JavaScript/Reference/Operators/Comparison_Operators
 
-## Use multi-line ternary operator
+## Use one-line ternary operator
 
-The ternary operator should not be used on a single line. Split it up into multiple lines instead.
+The ternary operator should be used on a single line. If it's too long, convert it into `if`.
 
 *Right:*
 
 ```js
-var foo = (a === b)
-  ? 1
-  : 2;
+var foo = (a === b) ? 1 : 2;
 ```
 
 *Wrong:*
 
 ```js
-var foo = (a === b) ? 1 : 2;
+var foo = (a === b)
+  ? 1
+  : 2;
 ```
 
 ## Do not extend built-in prototypes
@@ -373,11 +436,39 @@ if (password.length >= 4 && /^(?=.*\d).{4,}$/.test(password)) {
 }
 ```
 
+## Keep operators on the beginning of the line
+
+When the line with condition is longer than 80 characters, keep operators on the beginning of the line:
+
+*Right:*
+
+```js
+if (isValidPassword
+    && hasAccess
+    && canPerformAction
+    && isOwner) {
+  // ...
+}
+```
+
+*Wrong:*
+
+```js
+if (isValidPassword &&
+    hasAccess &&
+    canPerformAction &&
+    isOwner) {
+  // ...
+}
+```
+
+**Don't break the condition into multiple lines if it fits in 80 chars**.
+
 ## Write small functions
 
 Keep your functions short. A good function fits on a slide that the people in
 the last row of a big room can comfortably read. So don't count on them having
-perfect vision and limit yourself to ~15 lines of code per function.
+perfect vision and limit yourself to ~30 lines of code per function. Longer functions will be marked with linting warning.
 
 ## Return early from functions
 
@@ -473,6 +564,8 @@ setTimeout(function() {
 }, 1000);
 ```
 
+Where possible, use [sequence/pipeline/parallel](https://github.com/cujojs/when/blob/master/docs/api.md#whensequence).
+
 ## Use slashes for comments
 
 Use slashes for both single line and multi line comments. Try to write
@@ -517,9 +610,76 @@ if (isSessionValid) {
 }
 ```
 
+Only accepted deviation from this are [JSDoc](http://usejsdoc.org/about-getting-started.html) comments:
+
+```js
+/**
+ * Represents a book.
+ * @constructor
+ * @param {string} title - The title of the book.
+ * @param {string} author - The author of the book.
+ */
+function Book(title, author) {
+  // ...
+}
+```
+
+## Don't execute code inline
+
+Don't execute code directly in the module, only in exported objects. Overwriting/invoking such code requires hacking with Node's module cache system
+
+*Right:*
+
+```js
+var fs = require('fs');
+
+var Foo = {};
+
+Foo.prototype.init = function(){
+  fs.writeFileSync('foo.txt', 'bar');
+};
+
+module.export = Foo;
+```
+
+*Wrong:*
+
+```js
+var fs = require('fs');
+
+// This will be executed on require('./Foo')
+fs.writeFileSync('foo.txt', 'bar');
+
+var Foo = {};
+
+module.export = Foo;
+```
+
 ## Object.freeze, Object.preventExtensions, Object.seal, with, eval
 
 Crazy shit that you will probably never need. Stay away from it.
+
+## IIFE
+
+Don't use [immediately-invoked function expression](http://en.wikipedia.org/wiki/Immediately-invoked_function_expression). Truly private functions/variables can be achieved by [not exporting them from the module](http://www.sitepoint.com/understanding-module-exports-exports-node-js/).
+
+*Right:*
+
+```js
+var foo = 'bar';
+```
+
+*Wrong:*
+
+```js
+(function(){
+  var foo = 'bar';
+}());
+```
+
+## Use strict mode
+
+To use [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode/Transitioning_to_strict_mode#Differences_from_non-strict_to_strict), just add `"use strict";` in the beginning of the file.
 
 ## Getters and setters
 
