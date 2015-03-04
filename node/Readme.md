@@ -26,7 +26,7 @@ license.
 * [Use lowerCamelCase for variables, properties and function names](#use-lowercamelcase-for-variables-properties-and-function-names)
 * [Use UpperCamelCase for class names](#use-uppercamelcase-for-class-names)
 * [Use UPPERCASE for Constants](#use-uppercase-for-constants)
-* [Use _underscore for private functions/vars](#use-underscore-for-private-functionsvars)
+* [Use _underscore for private functions/vars](use-_underscore-for-private-functionsvars)
 * [Naming files](#naming-files)
 * [Modularize](#modularize)
 * [Object / Array creation](#object--array-creation)
@@ -311,7 +311,7 @@ Test specs should be suffixed with `.spec.js` (i.e. `UserCreator.spec.js`).
 
 Always group modules in directories based on their function (i.e. models, controllers and views in separate dirs).
 
-# Modularize
+## Modularize
 
 Keep your files under 1000 lines. If it gets longer, try to refactor it into smaller modules.
 
